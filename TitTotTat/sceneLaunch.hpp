@@ -207,6 +207,10 @@ public:
 	}
 
 	const bool handleEvent(RenderWindow& win, Event& event) {
+		if (event.type == Event::KeyReleased&&event.key.code == Keyboard::RShift) {
+			sceneGame.setNetworkUsed(false);
+			changeScene(sceneGame);
+		}
 		return true;
 	}
 

@@ -14,19 +14,18 @@
 #include "basicObject.hpp"
 #include "Particle.hpp"
 #include "bullet.hpp"
+#include "shipHull.hpp"
 
 using namespace std;
 using namespace sf;
 
 const double msp = 50.0, ac = 0.4, dc = 0.02;
-Texture tship, tTowerBase, tTowerTop;
 int isFire;
 bool isDead, isExplode;
 bool isSpiltControled = false;
 bool isShipResLoaded = false;
 Clock deadTimer;
 
-Sprite sship, stowertop, stowerbase;
 
 class Ship :public BasicObject
 {
@@ -114,7 +113,7 @@ public:
 		health = 1000;
 		shield = 1000;
 		energy = 0;
-		isDead = isExplode = dock= false;
+		isDead = isExplode = dock = false;
 		fireTimer = 0;
 		vibrateTimer = 0;
 
@@ -169,6 +168,7 @@ public:
 		sship.setPosition(offX, offY);
 		sship.setRotation(rot + 270);
 		win.draw(sship);
+		renderObjectHitbox(win, *this);
 	}
 
 	static void drawShip(RenderWindow& win, double offX, double offY, int rot, string name, bool isDocked, bool hasFire)
@@ -220,9 +220,26 @@ public:
 	}
 
 	void moveX(double amount) {
-		if ((isSame(offX, 0) && spX < 0) || (isSame(offX, arenaWidth) && spX > 0))
-			return;
-
+		offX += amount;
+		for (int i = 0; i < shipHullAliveCount; i++) {
+			if (doesObjectIntersects(shipHull[i], *this)) {
+				if (offX > shipHull[i].getPosition().x)
+					offX = shipHull[i].getPosition().x + shipHull[i].getSize().x / 2.0 + sizeX / 2.0;
+				else
+					offX = shipHull[i].getPosition().x - shipHull[i].getSize().x / 2.0 - sizeX / 2.0;
+			}
+		}
+	}
+	void moveY(double amount) {
+		offY += amount;
+		for (int i = 0; i < shipHullAliveCount; i++) {
+			if (doesObjectIntersects(shipHull[i], *this)) {
+				if (offY > shipHull[i].getPosition().y)
+					offY = shipHull[i].getPosition().y + shipHull[i].getSize().y / 2.0 + sizeY / 2.0;
+				else
+					offY = shipHull[i].getPosition().y - shipHull[i].getSize().y / 2.0 - sizeY / 2.0;
+			}
+		}
 	}
 
 	void spUpdate(int aclc, double aclcMultply)
@@ -259,8 +276,8 @@ public:
 		if ((isSame(offY, 0) && spY < 0) || (isSame(offY, arenaHeight) && spY > 0))
 			spY = 0;
 
-		offX += spX*aclcMultply;
-		offY += spY*aclcMultply;
+		moveX(spX*aclcMultply);
+		moveY(spY*aclcMultply);
 	}
 
 	void updateLogic(RenderWindow& win)   //Called once per frame.
@@ -537,7 +554,7 @@ public:
 
 	void updateGameView(RenderWindow& win)
 	{
-		View view(Vector2f(offX, offY), win.getView().getSize());
+		View view(Vector2f(offX, offY), Vector2f(win.getSize().x, win.getSize().y));
 		if (vibrateTimer > 0)
 			view.move(abs(vibrateTimer % 8 - 4) - 2, abs(vibrateTimer % 8 - 4) - 2);
 		view.zoom(viewZoomFactor);

@@ -4,6 +4,7 @@
 #include <cmath>
 #include <mutex>
 #include <map>
+#include "MainResDef.hpp"
 #include "basicObject.hpp"
 #include "sceneBase.hpp"
 

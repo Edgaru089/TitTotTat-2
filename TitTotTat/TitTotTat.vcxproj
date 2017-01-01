@@ -135,6 +135,7 @@
     <ClInclude Include="Blocker.hpp" />
     <ClInclude Include="BulletHull.hpp" />
     <ClInclude Include="Button.hpp" />
+    <ClInclude Include="MainResDef.hpp" />
     <ClInclude Include="objectCollisonManager.hpp" />
     <ClInclude Include="Overall.hpp" />
     <ClInclude Include="Particle.hpp" />

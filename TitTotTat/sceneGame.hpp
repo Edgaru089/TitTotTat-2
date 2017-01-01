@@ -17,6 +17,7 @@
 #include "networkMain.hpp"
 #include "objectCollisonManager.hpp"
 #include "Particle.hpp"
+#include "Tower.hpp"
 //#include "tower.hpp"
 
 using namespace std;
@@ -137,6 +138,7 @@ public:
 		ship.launch(rand() % arenaWidth, rand() % arenaHeight, 0, "TestApp");
 		win.setFramerateLimit(60);
 		particleManager.clearList();
+		towerList.clear();
 		isFullscreen = false;
 		isSpiltControled = false;
 		//if (isNetworkUsed&&!isNetworkRunning) {
@@ -164,6 +166,7 @@ public:
 		particleManager.onRender(win);
 		NetworkInterface::threadRenderer(win);
 		ship.onRender(win);
+		towerList.onRender(win);
 		//for (int i = 0; i < towerCount; i++)
 		//	if (tower[i].isAlive())
 		//		tower[i].onRender(win);
@@ -185,6 +188,8 @@ public:
 			pausedScene.pauseGame(win);
 		else if (event.type == Event::KeyReleased&&event.key.code == Keyboard::K)
 			isSpiltControled = !isSpiltControled;
+		else if (event.type == Event::KeyReleased&&event.key.code == Keyboard::J)
+			towerList.addTower(ship.getPositionDouble());
 		else
 			return false;
 		return true;
@@ -207,6 +212,7 @@ public:
 			if (bullet[i].isAlive())
 				bullet[i].updateLogic(win);
 		ship.updateLogic(win);
+		towerList.updateLogic(win);
 		particleManager.updateLogic(win);
 		logicDataLock.unlock();
 		//NetworkInterface::threadWorkerNoThread();
