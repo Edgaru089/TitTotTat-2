@@ -16,7 +16,7 @@ using namespace std;
 typedef Vector2<double> Vector2d;
 
 const int arenaWidth = 1600, arenaHeight = 900;
-const int majorVersion = 0, minorVersion = 3, releaseVersion = 0, build = 2106;
+const int majorVersion = 0, minorVersion = 4, releaseVersion = 2, build = 2809;
 
 const double PI = 3.14159265359;
 Image shipPng;

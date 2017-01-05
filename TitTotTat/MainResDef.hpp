@@ -3,6 +3,10 @@
 
 using namespace sf;
 
-//Ship.hpp
+//Ship.hpp, ShipHull.hpp
 Texture tship, tTowerBase, tTowerTop;
 Sprite sship, stowertop, stowerbase;
+
+//Tower.hpp, TowerHull.hpp
+Texture towerStandaloneBase, towerStandaloneTop;
+bool isTowerTextureLoaded;

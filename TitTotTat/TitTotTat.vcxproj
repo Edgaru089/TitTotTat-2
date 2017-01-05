@@ -153,6 +153,7 @@
     <ClInclude Include="shipHull.hpp" />
     <ClInclude Include="Textbox.hpp" />
     <ClInclude Include="Tower.hpp" />
+    <ClInclude Include="TowerHull.hpp" />
     <ClInclude Include="uuid.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -13,9 +13,9 @@ using namespace sf;
 class ShipHull :public BasicObject
 {
 public:
-	ShipHull() :BasicObject(), sizeX(50.0f), sizeY(50.0f) { }
+	ShipHull() :BasicObject(), sizeX(40.0f), sizeY(40.0f) { }
 	ShipHull(float posX, float posY, int rotation, string name, bool isDocked, bool hasFire, bool isDead) :
-		BasicObject(), sizeX(50.0f), sizeY(50.0f), offX(posX), offY(posY), rot(rotation), isDocked(isDocked), hasFire(hasFire), isDead(isDead) { }
+		BasicObject(), sizeX(40.0f), sizeY(40.0f), offX(posX), offY(posY), rot(rotation), isDocked(isDocked), hasFire(hasFire), isDead(isDead) { }
 
 	void updateLogic(RenderWindow& win) {
 
@@ -48,6 +48,8 @@ public:
 	}
 
 	virtual const FloatRect getHitbox() { return FloatRect(offX - sizeX / 2.0f, offY - sizeY / 2.0f, sizeX, sizeY); }
+	virtual Vector2f getSize() { return Vector2f(sizeX, sizeY); }
+	virtual Vector2f getPosition() { return Vector2f(offX, offY); }
 
 	const bool isAlive() {
 		return !isDead;

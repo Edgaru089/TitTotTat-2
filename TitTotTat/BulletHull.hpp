@@ -38,6 +38,6 @@ private:
 	int size; //Refer to "Bullet.hpp" Bullet::Small, Bullet::Large;
 };
 
-BulletHull bulletHull[100];
+BulletHull bulletHull[2000];
 const int bulletHullCount = 100;
 int bulletHullAliveCount = 0;

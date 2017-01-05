@@ -10,6 +10,8 @@
 #include "shipHull.hpp"
 #include "BulletHull.hpp"
 #include "objectCollisonManager.hpp"
+#include "Tower.hpp"
+#include "TowerHull.hpp"
 
 using namespace std;
 using namespace sf;
@@ -134,6 +136,13 @@ public:
 		pack << ship.getRotation() << ship.getName();
 		pack << ship.isDocked() << (isFire == Ship::Back) << isExplode << isDead;
 		pack << -1.0f << -1.0f;
+		int p = 0;
+		for (Tower& i : towerList.tower) {
+			pack << i.getPosition().x << i.getPosition().y << i.getRotation();
+			p++;
+			//cout << "Packaged Tower. Number: " << p << endl;
+		}
+		pack << -1.0f << -1.0f;
 		int partN = particleManager.partEmitTrace.size();
 		pack << partN;
 		while (partN--) {
@@ -199,6 +208,16 @@ public:
 			curPos++;
 		}
 		shipHullAliveCount = curPos;
+		int p = 0;
+		towerHulls.clear();
+		while (true) {
+			p++;
+			copy >> offX >> offY;
+			if (isSame(offX, -1.0f) && isSame(offY, -1.0f))
+				break;
+			copy >> rot;
+			towerHulls.push_back(TowerHull(Vector2d(offX, offY), rot));
+		}
 		int partN = particleManager.partEmitTrace.size();
 		copy >> partN;
 		while (partN--) {
@@ -340,6 +359,8 @@ public:
 	{
 		if (!connected)
 			return;
+		for (TowerHull& i : towerHulls)
+			i.onRender(win);
 		for (int i = 0; i < bulletHullAliveCount; i++)
 			bulletHull[i].onRender(win);
 		for (int i = 0; i < shipHullAliveCount; i++)

@@ -6,6 +6,7 @@
 #include "main.hpp"
 #include "basicObject.hpp"
 #include "Particle.hpp"
+#include "uuid.hpp"
 
 using namespace sf;
 
@@ -125,7 +126,7 @@ private:
 	Uuid owner;
 };
 
-Bullet bullet[800];
+Bullet bullet[2000];
 const int bulletCount = 800;
 int bulletAliveCount;
 
@@ -135,3 +136,23 @@ void updateAliveBulletCount()
 		if (bullet[i].isAlive())
 			bulletAliveCount++;
 }
+
+void shootSmall(Vector2d posD,int rot)
+{
+	int tmp = 0;
+	while (bullet[tmp].isAlive())
+		tmp++;
+	bullet[tmp].launch(posD.x + 20.0*cos(rot*PI / 180.0), posD.y + 20.0*sin(rot*PI / 180.0), rot, Bullet::Small, Uuid::getUuid());
+	particleManager.emit(Vector2d(posD.x + 20.0*cos(rot*PI / 180.0), posD.y + 20.0*sin(rot*PI / 180.0)), Color(192, 192, 192), 2, 2.0, rot, 15.0);
+}
+void shootSmall(Vector2d pos, int rot, double speed) { shootSmall(pos, rot); }
+
+void shootLarge(Vector2d posD,  int rot) {
+	int tmp = 0;
+	while (bullet[tmp].isAlive())
+		tmp++;
+	bullet[tmp].launch(posD.x + 20.0*cos(rot*PI / 180.0), posD.y + 20.0*sin(rot*PI / 180.0), rot, Bullet::Large, Uuid::getUuid());
+	particleManager.emit(Vector2d(posD.x + 20.0*cos(rot*PI / 180.0), posD.y + 20.0*sin(rot*PI / 180.0)), Color(192, 192, 192),
+		10, 2.0, rot, 30.0);
+}
+void shootLarge(Vector2d pos, int rot, double speed) { shootLarge(pos, rot); }

@@ -15,6 +15,8 @@
 #include "Particle.hpp"
 #include "bullet.hpp"
 #include "shipHull.hpp"
+#include "Tower.hpp"
+#include "TowerHull.hpp"
 
 using namespace std;
 using namespace sf;
@@ -41,7 +43,7 @@ public:
 	static const int maxFuel = 1200, maxHealth = 1000, maxShield = 1500, maxEnergy = 1000;
 	float sizeX, sizeY;
 
-	Ship() :BasicObject(), sizeX(50.0f), sizeY(50.0f) { /*fani = exani = 0;*/ isReady = false; }
+	Ship() :BasicObject(), sizeX(40.0f), sizeY(40.0f) { /*fani = exani = 0;*/ isReady = false; }
 
 	bool loadRes()
 	{
@@ -218,28 +220,44 @@ public:
 			isSpiltControled ? "True" : "False", (isDead || isExplode) ? "Dead" : "");
 		return string(s);
 	}
-
+	void reborderX(BasicObject& obj) {
+		if (offX > obj.getPosition().x)
+			offX = obj.getPosition().x + obj.getSize().x / 2.0 + sizeX / 2.0;
+		else
+			offX = obj.getPosition().x - obj.getSize().x / 2.0 - sizeX / 2.0;
+		spX = 0.0;
+	}
 	void moveX(double amount) {
 		offX += amount;
-		for (int i = 0; i < shipHullAliveCount; i++) {
-			if (doesObjectIntersects(shipHull[i], *this)) {
-				if (offX > shipHull[i].getPosition().x)
-					offX = shipHull[i].getPosition().x + shipHull[i].getSize().x / 2.0 + sizeX / 2.0;
-				else
-					offX = shipHull[i].getPosition().x - shipHull[i].getSize().x / 2.0 - sizeX / 2.0;
-			}
-		}
+		for (int i = 0; i < shipHullAliveCount; i++)
+			if (shipHull[i].isAlive() && doesObjectIntersects(shipHull[i], *this))
+				reborderX(shipHull[i]);
+		for (Tower& i : towerList.tower)
+			if (i.isAlive() && doesObjectIntersects(i, *this))
+				reborderX(i);
+		for (TowerHull& i : towerHulls)
+			if (doesObjectIntersects(i, *this))
+				reborderX(i);
+	}
+
+	void reborderY(BasicObject& obj) {
+		if (offY > obj.getPosition().y)
+			offY = obj.getPosition().y + obj.getSize().y / 2.0 + sizeY / 2.0;
+		else
+			offY = obj.getPosition().y - obj.getSize().y / 2.0 - sizeY / 2.0;
+		spY = 0.0;
 	}
 	void moveY(double amount) {
 		offY += amount;
-		for (int i = 0; i < shipHullAliveCount; i++) {
-			if (doesObjectIntersects(shipHull[i], *this)) {
-				if (offY > shipHull[i].getPosition().y)
-					offY = shipHull[i].getPosition().y + shipHull[i].getSize().y / 2.0 + sizeY / 2.0;
-				else
-					offY = shipHull[i].getPosition().y - shipHull[i].getSize().y / 2.0 - sizeY / 2.0;
-			}
-		}
+		for (int i = 0; i < shipHullAliveCount; i++)
+			if (doesObjectIntersects(shipHull[i], *this))
+				reborderY(shipHull[i]);
+		for (Tower& i : towerList.tower)
+			if (i.isAlive() && doesObjectIntersects(i, *this))
+				reborderY(i);
+		for (TowerHull& i : towerHulls)
+			if (doesObjectIntersects(i, *this))
+				reborderY(i);
 	}
 
 	void spUpdate(int aclc, double aclcMultply)
@@ -547,6 +565,8 @@ public:
 	Vector2d getSpeedDouble() { return Vector2d(spX, spY); }
 
 	String getName() { return String(name); }
+
+	double getEnergy() { return energy; }
 
 	virtual const FloatRect getHitbox() { return FloatRect(offX - sizeX / 2.0f, offY - sizeY / 2.0f, sizeX, sizeY); }
 

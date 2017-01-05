@@ -123,7 +123,7 @@ public:
 	string launchNetworkThread(bool listen, IpAddress& ip, unsigned short port, bool useStdIo = false) {
 		if (!isNetworkUsed)
 			return "FAILED: Network not enabled.";
-		string str= NetworkInterface::startThread(listen, ip, port, useStdIo);
+		string str = NetworkInterface::startThread(listen, ip, port, useStdIo);
 		cout << "NETWORK: " << str << endl;
 		return str;
 		isNetworkRunning = true;
@@ -150,6 +150,28 @@ public:
 		isAlive = true;
 	}
 
+	void renderTowerExceptions(RenderWindow& win) {
+		if (!Keyboard::isKeyPressed(isSpiltControled ? Keyboard::B : Keyboard::J)) {
+			return;
+		}
+		Vector2f pos = ship.getPosition();
+		float posX = pos.x + 100.0*cos(ship.getRotation()*PI / 180.0), posY = pos.y + 100.0*sin(ship.getRotation()*PI / 180.0);
+		bool isVaild = true;
+		for (Tower& i : towerList.tower) {
+			if (FloatRect(posX - 50 / 2.0f, posY - 50 / 2.0f, 50, 50).intersects(i.getHitbox())) {
+				isVaild = false;
+				break;
+			}
+		}
+		RectangleShape rect;
+		rect.setFillColor(isVaild ? Color(192, 192, 192, 64) : Color(192, 0, 0, 64));
+		rect.setOutlineColor(true ? Color(240, 240, 240, 64) : Color(240, 0, 0, 64));
+		rect.setOrigin(25.0f, 25.0f);
+		rect.setPosition(posX, posY);
+		rect.setSize(Vector2f(50.0f, 50.0f));
+		win.draw(rect);
+	}
+
 	void onRender(RenderWindow& win)
 	{
 		if (!win.isOpen())
@@ -160,19 +182,22 @@ public:
 		View view;
 		//win.draw(outerBound);
 		win.draw(stoneSprite);
+		logicDataLock.lock();
 		for (int i = 0; i < bulletCount; i++)
 			if (bullet[i].isAlive())
 				bullet[i].onRender(win);
 		particleManager.onRender(win);
 		NetworkInterface::threadRenderer(win);
-		ship.onRender(win);
 		towerList.onRender(win);
+		ship.onRender(win);
+		renderTowerExceptions(win);
 		//for (int i = 0; i < towerCount; i++)
 		//	if (tower[i].isAlive())
 		//		tower[i].onRender(win);
 		/*----- Scene Rendering Ended; Starting UI Rendering -----*/
 		ship.updateUIView(win);
 		ship.onRenderUI(win);
+		logicDataLock.unlock();
 		if (pausedScene.paused()) {
 			pausedScene.pausedGameRender(win);
 			return;
@@ -188,8 +213,6 @@ public:
 			pausedScene.pauseGame(win);
 		else if (event.type == Event::KeyReleased&&event.key.code == Keyboard::K)
 			isSpiltControled = !isSpiltControled;
-		else if (event.type == Event::KeyReleased&&event.key.code == Keyboard::J)
-			towerList.addTower(ship.getPositionDouble());
 		else
 			return false;
 		return true;
@@ -214,8 +237,20 @@ public:
 		ship.updateLogic(win);
 		towerList.updateLogic(win);
 		particleManager.updateLogic(win);
+		if (isTowerKeyPressed && !Keyboard::isKeyPressed(isSpiltControled ? Keyboard::B : Keyboard::J))
+			addTower();
+		if (Keyboard::isKeyPressed(isSpiltControled ? Keyboard::B : Keyboard::J))
+			isTowerKeyPressed = true;
+		else
+			isTowerKeyPressed = false;
 		logicDataLock.unlock();
 		//NetworkInterface::threadWorkerNoThread();
+	}
+
+	void addTower() {
+		if (ship.getEnergy() > 400)
+			if (towerList.addTower(Vector2d(ship.getPositionDouble().x + 100.0*cos(ship.getRotation()*PI / 180.0), ship.getPositionDouble().y + 100.0*sin(ship.getRotation()*PI / 180.0))))
+				ship.useEnergy(400);
 	}
 
 	void stop()
@@ -236,9 +271,10 @@ public:
 	}
 
 private:
-	bool isNetworkUsed,isNetworkRunning;
+	bool isNetworkUsed, isNetworkRunning;
 	bool isAlive;
 	bool isFullscreen;
+	bool isTowerKeyPressed;
 	Texture curScene, stone;
 	Sprite stoneSprite;
 	VertexArray outerBound;
