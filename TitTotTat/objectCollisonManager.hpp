@@ -24,18 +24,18 @@ public:
 		for (int i = 0; i < bulletHullAliveCount; i++) {
 			if (doesObjectIntersects(bulletHull[i], ship))
 				ship.harm(bulletHull[i].getBulletSize() == Bullet::Large ? bulletLargeHarm : bulletSmallHarm);
-			for (Tower&j : towerList.tower)
-				if (doesObjectIntersects(bulletHull[i], j))
-					j.harm(bulletHull[i].getBulletSize() == Bullet::Large ? bulletLargeHarm : bulletSmallHarm);
+			//for (Tower&j : towerList.tower)
+			//	if (doesObjectIntersects(bulletHull[i], j))
+			//		j.harm(bulletHull[i].getBulletSize() == Bullet::Large ? bulletLargeHarm : bulletSmallHarm);
 		}
 		for (int i = 0; i < bulletCount; i++) {
 			if (bullet[i].isAlive()) {
 				for (int j = 0; j < shipHullAliveCount; j++)
 					if (doesObjectIntersects(bullet[i], shipHull[j]) && shipHull[j].isAlive())
 						bullet[i].killIn(0);
-				for (TowerHull&j : towerHulls)
-					if (doesObjectIntersects(bullet[i], j))
-						bullet[i].killIn(0);
+				//for (TowerHull&j : towerHulls)
+				//	if (doesObjectIntersects(bullet[i], j))
+				//		bullet[i].killIn(0);
 			}
 		}
 		logicDataLock.unlock();

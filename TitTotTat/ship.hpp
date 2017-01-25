@@ -15,8 +15,8 @@
 #include "Particle.hpp"
 #include "bullet.hpp"
 #include "shipHull.hpp"
-#include "Tower.hpp"
-#include "TowerHull.hpp"
+//#include "Tower.hpp"
+//#include "TowerHull.hpp"
 
 using namespace std;
 using namespace sf;
@@ -232,12 +232,12 @@ public:
 		for (int i = 0; i < shipHullAliveCount; i++)
 			if (shipHull[i].isAlive() && doesObjectIntersects(shipHull[i], *this))
 				reborderX(shipHull[i]);
-		for (Tower& i : towerList.tower)
-			if (i.isAlive() && doesObjectIntersects(i, *this))
-				reborderX(i);
-		for (TowerHull& i : towerHulls)
-			if (doesObjectIntersects(i, *this))
-				reborderX(i);
+		//for (Tower& i : towerList.tower)
+		//	if (i.isAlive() && doesObjectIntersects(i, *this))
+		//		reborderX(i);
+		//for (TowerHull& i : towerHulls)
+		//	if (doesObjectIntersects(i, *this))
+		//		reborderX(i);
 	}
 
 	void reborderY(BasicObject& obj) {
@@ -252,12 +252,12 @@ public:
 		for (int i = 0; i < shipHullAliveCount; i++)
 			if (doesObjectIntersects(shipHull[i], *this))
 				reborderY(shipHull[i]);
-		for (Tower& i : towerList.tower)
-			if (i.isAlive() && doesObjectIntersects(i, *this))
-				reborderY(i);
-		for (TowerHull& i : towerHulls)
-			if (doesObjectIntersects(i, *this))
-				reborderY(i);
+		//for (Tower& i : towerList.tower)
+		//	if (i.isAlive() && doesObjectIntersects(i, *this))
+		//		reborderY(i);
+		//for (TowerHull& i : towerHulls)
+		//	if (doesObjectIntersects(i, *this))
+		//		reborderY(i);
 	}
 
 	void spUpdate(int aclc, double aclcMultply)

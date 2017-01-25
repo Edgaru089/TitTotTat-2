@@ -17,8 +17,7 @@
 #include "networkMain.hpp"
 #include "objectCollisonManager.hpp"
 #include "Particle.hpp"
-#include "Tower.hpp"
-//#include "tower.hpp"
+//#include "Tower.hpp"
 
 using namespace std;
 using namespace sf;
@@ -138,7 +137,7 @@ public:
 		ship.launch(rand() % arenaWidth, rand() % arenaHeight, 0, "TestApp");
 		win.setFramerateLimit(60);
 		particleManager.clearList();
-		towerList.clear();
+		//towerList.clear();
 		isFullscreen = false;
 		isSpiltControled = false;
 		//if (isNetworkUsed&&!isNetworkRunning) {
@@ -150,27 +149,27 @@ public:
 		isAlive = true;
 	}
 
-	void renderTowerExceptions(RenderWindow& win) {
-		if (!Keyboard::isKeyPressed(isSpiltControled ? Keyboard::B : Keyboard::J)) {
-			return;
-		}
-		Vector2f pos = ship.getPosition();
-		float posX = pos.x + 100.0*cos(ship.getRotation()*PI / 180.0), posY = pos.y + 100.0*sin(ship.getRotation()*PI / 180.0);
-		bool isVaild = true;
-		for (Tower& i : towerList.tower) {
-			if (FloatRect(posX - 50 / 2.0f, posY - 50 / 2.0f, 50, 50).intersects(i.getHitbox())) {
-				isVaild = false;
-				break;
-			}
-		}
-		RectangleShape rect;
-		rect.setFillColor(isVaild ? Color(192, 192, 192, 64) : Color(192, 0, 0, 64));
-		rect.setOutlineColor(true ? Color(240, 240, 240, 64) : Color(240, 0, 0, 64));
-		rect.setOrigin(25.0f, 25.0f);
-		rect.setPosition(posX, posY);
-		rect.setSize(Vector2f(50.0f, 50.0f));
-		win.draw(rect);
-	}
+	//void renderTowerExceptions(RenderWindow& win) {
+	//	if (!Keyboard::isKeyPressed(isSpiltControled ? Keyboard::B : Keyboard::J)) {
+	//		return;
+	//	}
+	//	Vector2f pos = ship.getPosition();
+	//	float posX = pos.x + 100.0*cos(ship.getRotation()*PI / 180.0), posY = pos.y + 100.0*sin(ship.getRotation()*PI / 180.0);
+	//	bool isVaild = true;
+	//	for (Tower& i : towerList.tower) {
+	//		if (FloatRect(posX - 50 / 2.0f, posY - 50 / 2.0f, 50, 50).intersects(i.getHitbox())) {
+	//			isVaild = false;
+	//			break;
+	//		}
+	//	}
+	//	RectangleShape rect;
+	//	rect.setFillColor(isVaild ? Color(192, 192, 192, 64) : Color(192, 0, 0, 64));
+	//	rect.setOutlineColor(true ? Color(240, 240, 240, 64) : Color(240, 0, 0, 64));
+	//	rect.setOrigin(25.0f, 25.0f);
+	//	rect.setPosition(posX, posY);
+	//	rect.setSize(Vector2f(50.0f, 50.0f));
+	//	win.draw(rect);
+	//}
 
 	void onRender(RenderWindow& win)
 	{
@@ -188,15 +187,14 @@ public:
 				bullet[i].onRender(win);
 		particleManager.onRender(win);
 		NetworkInterface::threadRenderer(win);
-		towerList.onRender(win);
+		//towerList.onRender(win);
 		ship.onRender(win);
-		renderTowerExceptions(win);
-		//for (int i = 0; i < towerCount; i++)
-		//	if (tower[i].isAlive())
-		//		tower[i].onRender(win);
+		//renderTowerExceptions(win);
+
 		/*----- Scene Rendering Ended; Starting UI Rendering -----*/
 		ship.updateUIView(win);
 		ship.onRenderUI(win);
+		isFrameReady = true;
 		logicDataLock.unlock();
 		if (pausedScene.paused()) {
 			pausedScene.pausedGameRender(win);
@@ -235,23 +233,23 @@ public:
 			if (bullet[i].isAlive())
 				bullet[i].updateLogic(win);
 		ship.updateLogic(win);
-		towerList.updateLogic(win);
+		//towerList.updateLogic(win);
 		particleManager.updateLogic(win);
-		if (isTowerKeyPressed && !Keyboard::isKeyPressed(isSpiltControled ? Keyboard::B : Keyboard::J))
-			addTower();
-		if (Keyboard::isKeyPressed(isSpiltControled ? Keyboard::B : Keyboard::J))
-			isTowerKeyPressed = true;
-		else
-			isTowerKeyPressed = false;
+		//if (isTowerKeyPressed && !Keyboard::isKeyPressed(isSpiltControled ? Keyboard::B : Keyboard::J))
+		//	addTower();
+		//if (Keyboard::isKeyPressed(isSpiltControled ? Keyboard::B : Keyboard::J))
+		//	isTowerKeyPressed = true;
+		//else
+		//	isTowerKeyPressed = false;
 		logicDataLock.unlock();
 		//NetworkInterface::threadWorkerNoThread();
 	}
 
-	void addTower() {
-		if (ship.getEnergy() > 400)
-			if (towerList.addTower(Vector2d(ship.getPositionDouble().x + 100.0*cos(ship.getRotation()*PI / 180.0), ship.getPositionDouble().y + 100.0*sin(ship.getRotation()*PI / 180.0))))
-				ship.useEnergy(400);
-	}
+	//void addTower() {
+	//	if (ship.getEnergy() > 400)
+	//		if (towerList.addTower(Vector2d(ship.getPositionDouble().x + 100.0*cos(ship.getRotation()*PI / 180.0), ship.getPositionDouble().y + 100.0*sin(ship.getRotation()*PI / 180.0))))
+	//			ship.useEnergy(400);
+	//}
 
 	void stop()
 	{
