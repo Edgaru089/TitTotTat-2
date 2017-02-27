@@ -13,9 +13,9 @@ using namespace sf;
 class ShipHull :public BasicObject
 {
 public:
-	ShipHull() :BasicObject(), sizeX(40.0f), sizeY(40.0f) { }
+	ShipHull() :BasicObject(), sizeX(36.0f), sizeY(36.0f) { }
 	ShipHull(float posX, float posY, int rotation, string name, bool isDocked, bool hasFire, bool isDead) :
-		BasicObject(), sizeX(40.0f), sizeY(40.0f), offX(posX), offY(posY), rot(rotation), isDocked(isDocked), hasFire(hasFire), isDead(isDead) { }
+		BasicObject(), sizeX(36.0f), sizeY(36.0f), offX(posX), offY(posY), rot(rotation), isDocked(isDocked), hasFire(hasFire), isDead(isDead) { }
 
 	void updateLogic(RenderWindow& win) {
 
@@ -43,7 +43,6 @@ public:
 			text.x = offX - rect.width / 2;
 			text.y = offY - 55;
 			fon.displayText(text, win);
-			renderObjectHitbox(win, *this);
 		}
 	}
 

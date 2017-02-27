@@ -129,13 +129,7 @@ public:
 	}
 	void launch(RenderWindow& win)
 	{
-		win.clear(Color(64, 64, 64));
-		fon.displayText(NFont::Text(2, 2,
-			(isNetworkUsed ? "initializing Game Scene...\nPlease refer to console for Network Settings." : "Initalizing Game Scene..."),
-			Color::White), win);
-		win.display();
 		ship.launch(rand() % arenaWidth, rand() % arenaHeight, 0, "TestApp");
-		win.setFramerateLimit(60);
 		particleManager.clearList();
 		//towerList.clear();
 		isFullscreen = false;
@@ -145,7 +139,6 @@ public:
 		//}
 		//win.setSize(Vector2u(600, 480));
 		win.setView(View(FloatRect(0, 0, win.getSize().x, win.getSize().y)));
-		win.setVisible(true);
 		isAlive = true;
 	}
 
@@ -177,11 +170,10 @@ public:
 			return;
 		win.clear();
 		/*----- Scene Rendering Starting -----*/
-		ship.updateGameView(win);
 		View view;
-		//win.draw(outerBound);
-		win.draw(stoneSprite);
 		logicDataLock.lock();
+		ship.updateGameView(win);
+		win.draw(stoneSprite);
 		for (int i = 0; i < bulletCount; i++)
 			if (bullet[i].isAlive())
 				bullet[i].onRender(win);

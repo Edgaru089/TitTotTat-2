@@ -10,7 +10,7 @@
 
 using namespace sf;
 
-static const double bulletStepAclc = 12.0, bulletSlowAclc = 9.0;
+static const double bulletStepAclc = 15.0, bulletSlowAclc = 11.0;
 const int bulletLargeHarm = 800, bulletSmallHarm = 400;
 
 class Bullet :public BasicObject

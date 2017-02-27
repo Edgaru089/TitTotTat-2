@@ -135,7 +135,7 @@ public:
 		sprintf(buf, "%d", port);
 		portBox.setString(buf);
 		sprintf(buf, "start TitTotTat.exe -connect localhost %d", port);
-		thread th0(system, buf);
+		thread th0(systemString, string(buf));
 		th0.detach();
 		mode = listenMode;
 		thread th1(startConnection, &win);

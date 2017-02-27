@@ -43,7 +43,7 @@ public:
 	static const int maxFuel = 1200, maxHealth = 1000, maxShield = 1500, maxEnergy = 1000;
 	float sizeX, sizeY;
 
-	Ship() :BasicObject(), sizeX(40.0f), sizeY(40.0f) { /*fani = exani = 0;*/ isReady = false; }
+	Ship() :BasicObject(), sizeX(36.0f), sizeY(36.0f) { /*fani = exani = 0;*/ isReady = false; }
 
 	bool loadRes()
 	{
@@ -170,7 +170,6 @@ public:
 		sship.setPosition(offX, offY);
 		sship.setRotation(rot + 270);
 		win.draw(sship);
-		renderObjectHitbox(win, *this);
 	}
 
 	static void drawShip(RenderWindow& win, double offX, double offY, int rot, string name, bool isDocked, bool hasFire)
@@ -229,9 +228,9 @@ public:
 	}
 	void moveX(double amount) {
 		offX += amount;
-		for (int i = 0; i < shipHullAliveCount; i++)
-			if (shipHull[i].isAlive() && doesObjectIntersects(shipHull[i], *this))
-				reborderX(shipHull[i]);
+		//for (int i = 0; i < shipHullAliveCount; i++)
+		//	if (shipHull[i].isAlive() && doesObjectIntersects(shipHull[i], *this))
+		//		reborderX(shipHull[i]);
 		//for (Tower& i : towerList.tower)
 		//	if (i.isAlive() && doesObjectIntersects(i, *this))
 		//		reborderX(i);
@@ -249,9 +248,9 @@ public:
 	}
 	void moveY(double amount) {
 		offY += amount;
-		for (int i = 0; i < shipHullAliveCount; i++)
-			if (doesObjectIntersects(shipHull[i], *this))
-				reborderY(shipHull[i]);
+		//for (int i = 0; i < shipHullAliveCount; i++)
+		//	if (doesObjectIntersects(shipHull[i], *this))
+		//		reborderY(shipHull[i]);
 		//for (Tower& i : towerList.tower)
 		//	if (i.isAlive() && doesObjectIntersects(i, *this))
 		//		reborderY(i);
@@ -260,25 +259,25 @@ public:
 		//		reborderY(i);
 	}
 
-	void spUpdate(int aclc, double aclcMultply)
+	void spUpdate(int aclc)
 	{
 		while (rot < 0)
 			rot += 360;
 		rot %= 360;
 		if (aclc == 1)
 		{
-			fuel -= 12 * aclcMultply;
-			spX += ac*cos(PI*rot / 180.0f)*aclcMultply;
-			spY += ac*sin(PI*rot / 180.0f)*aclcMultply;
+			fuel -= 4;
+			spX += ac*cos(PI*rot / 180.0f);
+			spY += ac*sin(PI*rot / 180.0f);
 		}
 		else if (aclc == -1)
 		{
-			fuel -= 12;
-			spX += ac*cos(PI*rot / 180.0f) / -2.0*aclcMultply;
-			spY += ac*sin(PI*rot / 180.0f) / -2.0*aclcMultply;
+			fuel -= 4;
+			spX += ac*cos(PI*rot / 180.0f) / -2.0;
+			spY += ac*sin(PI*rot / 180.0f) / -2.0;
 		}
-		spX -= pow(dc, aclcMultply)*spX;// damping
-		spY -= pow(dc, aclcMultply)*spY;
+		spX -= dc*spX;// damping
+		spY -= dc*spY;
 
 		if (spX<0.0 && spX>-0.05)
 			spX = 0.0;
@@ -294,8 +293,8 @@ public:
 		if ((isSame(offY, 0) && spY < 0) || (isSame(offY, arenaHeight) && spY > 0))
 			spY = 0;
 
-		moveX(spX*aclcMultply);
-		moveY(spY*aclcMultply);
+		moveX(spX);
+		moveY(spY);
 	}
 
 	void updateLogic(RenderWindow& win)   //Called once per frame.
@@ -312,7 +311,6 @@ public:
 			return;
 		}
 		Time aclcTime = aclcTimer.restart();
-		double aclcMultply = aclcTime.asMicroseconds() / 20000.0;
 		if (Keyboard::isKeyPressed(isSpiltControled ? Keyboard::A : Keyboard::Left)) //Turn left;
 			rotate(-2);
 		if (Keyboard::isKeyPressed(isSpiltControled ? Keyboard::D : Keyboard::Right)) //Turn right;
@@ -320,11 +318,11 @@ public:
 		isFire = None;
 		if (Keyboard::isKeyPressed(isSpiltControled ? Keyboard::W : Keyboard::Up) && !engineOff && !dock) //Go ahead;
 		{
-			spUpdate(1, aclcMultply);
+			spUpdate(1);
 			isFire = Back;
 		}
 		else
-			spUpdate(0, aclcMultply);
+			spUpdate(0);
 		if (fireTimer > 0)
 			fireTimer--;
 		else if (!isDocked() && Keyboard::isKeyPressed(isSpiltControled ? Keyboard::C : Keyboard::Space) && useEnergy(80)) //SHOOT!!!
@@ -354,11 +352,11 @@ public:
 		if (shield > maxShield)
 			shield = maxShield;
 		else if (shield != maxShield)
-			shield += 4.0* aclcMultply;
+			shield += 4.0;
 		if (health > maxHealth)
 			health = maxHealth;
 		else if (health != maxHealth)
-			health += 1.0* aclcMultply;
+			health += 1.0;
 		//Progcess fuel.
 		if (fuel <= 0)
 		{
@@ -367,7 +365,7 @@ public:
 		}
 		if (engineOff&&fuel >= maxFuel / 3.0)
 			engineOff = false;
-		fuel += 10.0* aclcMultply;
+		fuel += 8;
 		if (fuel > maxFuel)
 			fuel = maxFuel;
 		//Progcess energy.
@@ -375,7 +373,7 @@ public:
 		if (energy > maxEnergy)
 			energy = maxEnergy;
 		else if (energy < maxEnergy)
-			energy += 5 * aclcMultply;
+			energy += 5;
 
 		if (vibrateTimer > 0)
 			vibrateTimer--;

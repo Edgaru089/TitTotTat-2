@@ -11,7 +11,7 @@
 using namespace sf;
 using namespace std;
 
-#define TEST_INSTED_OF_MAIN
+#define USE_ASYNC_RENDERING
 
 typedef Vector2<double> Vector2d;
 
@@ -59,4 +59,8 @@ bool isSame(double x, double y)
 		return true;
 	else
 		return false;
+}
+
+int systemString(string command) {
+	return system(command.c_str());
 }

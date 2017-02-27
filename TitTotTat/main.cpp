@@ -17,11 +17,18 @@
 using namespace std;
 using namespace sf;
 
+void threadRendering() {
+	win.setActive(true);
+	win.setVerticalSyncEnabled(true);
+	while (mainScenePtr->isReady()) {
+		mainScenePtr->onRender(win);
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	mainScenePtr = &sceneLaunch;
 
-	win.setFramerateLimit(60);
 	cout << "Pre-Initalazing...";
 	srand(time(NULL));
 	bool isFullscreen = false;
@@ -33,7 +40,7 @@ int main(int argc, char* argv[])
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 2;
 	win.create(VideoMode(1080, 608), "TitTotTat", Style::Default, settings);
-	win.setFramerateLimit(60);
+	win.setVerticalSyncEnabled(true);
 	win.setVisible(true);
 	cout << "Post-Initalazing...";
 	mainScenePtr->launch(win);
@@ -47,8 +54,15 @@ int main(int argc, char* argv[])
 		th.detach();
 	}
 	cout << " Done." << endl;
+#ifdef USE_ASYNC_RENDERING
+	win.setActive(false);
+	thread render(threadRendering);
+	render.detach();
+#endif
+	Clock logicCycleClock;
 	while (mainScenePtr->isReady())
 	{
+		logicCycleClock.restart();
 		Event event;
 		while (win.pollEvent(event))
 		{
@@ -91,7 +105,9 @@ int main(int argc, char* argv[])
 		if (!win.isOpen())
 			break;
 		mainScenePtr->updateLogic(win);
+#ifndef USE_ASYNC_RENDERING
 		mainScenePtr->onRender(win);
+#endif
 		if (doesSceneChange) {
 			doesSceneChange = false;
 			mainScenePtr->stop();
@@ -99,6 +115,9 @@ int main(int argc, char* argv[])
 			mainScenePtr->launch(win);
 			continue;
 		}
+		Time t;
+		if ((t = logicCycleClock.restart()) < microseconds(16666))
+			sleep(microseconds(16666) - t);
 	}
 	return EXIT_SUCCESS;
 }

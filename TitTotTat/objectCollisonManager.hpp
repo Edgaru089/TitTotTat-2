@@ -32,7 +32,8 @@ public:
 			if (bullet[i].isAlive()) {
 				for (int j = 0; j < shipHullAliveCount; j++)
 					if (doesObjectIntersects(bullet[i], shipHull[j]) && shipHull[j].isAlive())
-						bullet[i].killIn(0);
+						//bullet[i].killIn(0);
+						bullet[i].kill();
 				//for (TowerHull&j : towerHulls)
 				//	if (doesObjectIntersects(bullet[i], j))
 				//		bullet[i].killIn(0);

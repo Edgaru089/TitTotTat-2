@@ -34,7 +34,6 @@ public:
 		sp.setOrigin(8.5f, 7.5f);
 		sp.setRotation(rot + 270);
 		win.draw(sp);
-		renderObjectHitbox(win, *this);
 	}
 
 	const FloatRect getHitbox() { return FloatRect(offX - sizeX / 2.0f, offY - sizeY / 2.0f, sizeX, sizeY); }
