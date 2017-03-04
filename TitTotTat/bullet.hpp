@@ -57,7 +57,7 @@ public:
 	void updateKillTimer() {
 		if (killTimer > 0)
 			killTimer--;
-		else if (killTimer == 0) {
+		if (killTimer == 0) {
 			kill();
 			killTimer = -1;
 		}

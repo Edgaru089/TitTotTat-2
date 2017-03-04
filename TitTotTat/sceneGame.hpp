@@ -186,7 +186,6 @@ public:
 		/*----- Scene Rendering Ended; Starting UI Rendering -----*/
 		ship.updateUIView(win);
 		ship.onRenderUI(win);
-		isFrameReady = true;
 		logicDataLock.unlock();
 		if (pausedScene.paused()) {
 			pausedScene.pausedGameRender(win);
@@ -233,6 +232,7 @@ public:
 		//	isTowerKeyPressed = true;
 		//else
 		//	isTowerKeyPressed = false;
+		isFrameReady = true;
 		logicDataLock.unlock();
 		//NetworkInterface::threadWorkerNoThread();
 	}

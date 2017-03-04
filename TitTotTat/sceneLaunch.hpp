@@ -273,21 +273,25 @@ public:
 	}
 
 	void invokeHost() {
-		cout << "sceneLaunch: Hosting!" << endl;
+		cout << "\rsceneLaunch: Hosting!" << endl;
 		connSelect.enable(ConnectionSelectLogic::listenMode);
 	}
 
 	void invokeConnect() {
-		cout << "sceneLaunch: Connecting!" << endl;
+		cout << "\rsceneLaunch: Connecting!" << endl;
 		//sceneGame.setNetworkUsed(true);
 		//changeScene(sceneGame);
 		connSelect.enable(ConnectionSelectLogic::connectMode);
 	}
 
 	void invokeExit() {
-		cout << "sceneLaunch: Byebye!" << endl;
+		cout << "\rsceneLaunch: Byebye!" << endl;
 		isAlive = false;
 		stop();
+	}
+
+	void stop() {
+		isAlive = false;
 	}
 
 	const bool isReady() {

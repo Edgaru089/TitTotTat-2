@@ -326,14 +326,14 @@ public:
 		//socket.setBlocking(false);
 		while (isStopping == false)
 		{
-			//logicDataLock.lock();
+			logicDataLock.lock();
 			if (!isFrameReady) {
-				//logicDataLock.unlock();
-				sleep(milliseconds(3));
+				logicDataLock.unlock();
+				sleep(milliseconds(1));
 				continue;
 			}
 			else
-				//logicDataLock.unlock();
+				logicDataLock.unlock();
 			threadSender();
 			threadReceiver();
 			if (!connected)

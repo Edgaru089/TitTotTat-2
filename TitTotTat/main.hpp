@@ -33,6 +33,9 @@ SceneBase* changeToScenePtr;
 
 map<string, SceneBase*> sceneMapper; //TODO: Map the scenes into the container.
 
+int logicTickPerSecond, logicTickCounter, framePerSecond, frameCounter;
+Clock logicTickCounterClock, frameCounterClock;
+
 
 void changeScene(SceneBase& scene) {
 	logicDataLock.lock();

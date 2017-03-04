@@ -17,11 +17,38 @@
 using namespace std;
 using namespace sf;
 
-void threadRendering() {
+void threadRendering(recursive_mutex* renderLock) {
 	win.setActive(true);
-	win.setVerticalSyncEnabled(true);
+	win.setVerticalSyncEnabled(false);
+	win.setFramerateLimit(60);
 	while (mainScenePtr->isReady()) {
+		renderLock->lock();
 		mainScenePtr->onRender(win);
+		frameCounter++;
+		if (frameCounterClock.getElapsedTime() > seconds(1.0f)) {
+			frameCounterClock.restart();
+			framePerSecond = frameCounter;
+			frameCounter = 0;
+			printf("\rTPS: %d, FPS: %d", logicTickPerSecond, framePerSecond);
+		}
+		renderLock->unlock();
+	}
+}
+
+void threadLogicUpdate() {
+	Clock logicCycleClock;
+	while (mainScenePtr->isReady()) {
+		logicCycleClock.restart();
+		mainScenePtr->updateLogic(win);
+		Time t;
+		logicTickCounter++;
+		if (logicTickCounterClock.getElapsedTime() > seconds(1.0f)) {
+			logicTickCounterClock.restart();
+			logicTickPerSecond = logicTickCounter;
+			logicTickCounter = 0;
+		}
+		if ((t = logicCycleClock.restart()) < microseconds(20000))
+			sleep(microseconds(20000) - t);
 	}
 }
 
@@ -32,8 +59,8 @@ int main(int argc, char* argv[])
 	cout << "Pre-Initalazing...";
 	srand(time(NULL));
 	bool isFullscreen = false;
-	fon.loadFromBinary("ibmank0.bin");
-	//fon.loadFromFile("ascii.txt", "ascii.png");
+	//fon.loadFromBinary("ibmank0.bin");
+	fon.loadFromFile("ascii.txt", "ascii.png");
 	sceneLaunch.preLaunchInit();
 	sceneGame.preLaunchInit();
 	cout << " Done." << endl;
@@ -55,19 +82,22 @@ int main(int argc, char* argv[])
 	}
 	cout << " Done." << endl;
 #ifdef USE_ASYNC_RENDERING
+	cout << "Async Rendering/Logic Update Enabled. Unstable. Aware." << endl;
+	recursive_mutex renderLock;
 	win.setActive(false);
-	thread render(threadRendering);
-	render.detach();
+	thread render(threadRendering, &renderLock);
+	thread logic(threadLogicUpdate);
 #endif
-	Clock logicCycleClock;
+	
 	while (mainScenePtr->isReady())
 	{
-		logicCycleClock.restart();
+		
 		Event event;
 		while (win.pollEvent(event))
 		{
 			if (event.type == Event::Closed)
 			{
+				logicDataLock.lock();
 				mainScenePtr->stop();
 				win.close();
 			}
@@ -80,15 +110,29 @@ int main(int argc, char* argv[])
 				if (event.key.code == Keyboard::F11)
 					if (!isFullscreen)
 					{
+#ifdef USE_ASYNC_RENDERING
+						renderLock.lock();
+#endif
 						win.create(VideoMode::getDesktopMode(), "TitTotTat", Style::Fullscreen, settings);
-						win.setFramerateLimit(60);
+						win.setVerticalSyncEnabled(true);
+#ifdef USE_ASYNC_RENDERING
+						win.setActive(false);
+						renderLock.unlock();
+#endif
 						isFullscreen = true;
 						mainScenePtr->adjustViewportChange(win);
 					}
 					else
 					{
+#ifdef USE_ASYNC_RENDERING
+						renderLock.lock();
+#endif
 						win.create(VideoMode(1080, 608), "TitTotTat", Style::Close | Style::Titlebar | Style::Resize, settings);
-						win.setFramerateLimit(60);
+						win.setVerticalSyncEnabled(true);
+#ifdef USE_ASYNC_RENDERING
+						win.setActive(false);
+						renderLock.unlock();
+#endif
 						isFullscreen = false;
 						mainScenePtr->adjustViewportChange(win);
 					}
@@ -104,8 +148,8 @@ int main(int argc, char* argv[])
 		}
 		if (!win.isOpen())
 			break;
-		mainScenePtr->updateLogic(win);
 #ifndef USE_ASYNC_RENDERING
+		mainScenePtr->updateLogic(win)
 		mainScenePtr->onRender(win);
 #endif
 		if (doesSceneChange) {
@@ -115,10 +159,17 @@ int main(int argc, char* argv[])
 			mainScenePtr->launch(win);
 			continue;
 		}
-		Time t;
-		if ((t = logicCycleClock.restart()) < microseconds(16666))
-			sleep(microseconds(16666) - t);
 	}
+	logicDataLock.unlock();
+	cout << "Shutdown In Progress..." << endl;
+#ifdef USE_ASYNC_RENDERING
+	cout << "[*] Joining Render Thread...";
+	render.join();
+	cout << "[*] Joining Logic Update Thread...";
+	logic.join();
+	cout << " Complete." << endl;
+#endif
+	cout << "Byebye!" << endl;
 	return EXIT_SUCCESS;
 }
 

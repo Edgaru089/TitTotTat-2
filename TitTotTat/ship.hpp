@@ -214,8 +214,8 @@ public:
 	string getFormatString()
 	{
 		char s[1001];
-		sprintf(s, "Offset: (%.2lf, %.2lf)\nSpeed: (%.5lf, %.5lf, %.5lf)\nRotation: %ddeg\nHealth/Shield/Fuel:\n%.3lf/%d, %.3lf/%d, %.3lf/%d\nZoom: X%.2f\nisSpiltControled: %s\n%s",
-			offX, offY, spX, spY, sqrt(spX*spX + spY*spY), rot, health, maxHealth, shield, maxShield, fuel, maxFuel, 1 / viewZoomFactor,
+		sprintf(s, "TPS: %d, FPS: %d\nOffset: (%.2lf, %.2lf)\nSpeed: (%.5lf, %.5lf, %.5lf)\nRotation: %ddeg\nHealth/Shield/Fuel:\n%.3lf/%d, %.3lf/%d, %.3lf/%d\nZoom: X%.2f\nisSpiltControled: %s\n%s",
+			logicTickPerSecond, framePerSecond, offX, offY, spX, spY, sqrt(spX*spX + spY*spY), rot, health, maxHealth, shield, maxShield, fuel, maxFuel, 1 / viewZoomFactor,
 			isSpiltControled ? "True" : "False", (isDead || isExplode) ? "Dead" : "");
 		return string(s);
 	}
@@ -312,9 +312,9 @@ public:
 		}
 		Time aclcTime = aclcTimer.restart();
 		if (Keyboard::isKeyPressed(isSpiltControled ? Keyboard::A : Keyboard::Left)) //Turn left;
-			rotate(-2);
+			rotate(-3);
 		if (Keyboard::isKeyPressed(isSpiltControled ? Keyboard::D : Keyboard::Right)) //Turn right;
-			rotate(2);
+			rotate(3);
 		isFire = None;
 		if (Keyboard::isKeyPressed(isSpiltControled ? Keyboard::W : Keyboard::Up) && !engineOff && !dock) //Go ahead;
 		{
